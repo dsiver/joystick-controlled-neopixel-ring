@@ -15,6 +15,7 @@
 #define NUM_PIXELS 16
 #define JOYSTICK_MAX 512
 #define JOYSTICK_MIN -512
+#define SENSITIVITY 400
 
 int xCenter, yCenter, xReading, yReading;
 
@@ -29,7 +30,11 @@ void setup() {
 void loop() {
   xReading = Esplora.readJoystickX();
   yReading = Esplora.readJoystickY();
-  double joystickToRadians = calculateRadians(xReading, yReading);        
+  double joystickToRadians;
+  if (abs(xReading) > SENSITIVITY || abs(yReading) > SENSITIVITY){
+    joystickToRadians = calculateRadians(xReading, yReading);
+  }
+   
   delay(500);
 }
 
@@ -39,6 +44,7 @@ double calculateRadians(int x, int y){
   xCalibrated = -xCalibrated;
   yCalibrated = -yCalibrated;
   double calculation = atan2(yCalibrated, xCalibrated);
+  calculation = constrain(calculation, -PI, PI);
 
   Serial.println("JoystickX: " + String(xReading) + "\t" +
                  "JoystickY: " + String(yReading) + "\t" + 
