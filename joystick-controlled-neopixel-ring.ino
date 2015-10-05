@@ -17,40 +17,53 @@
 #define JOYSTICK_MIN -512
 #define SENSITIVITY 400
 
-int xCenter, yCenter, xReading, yReading;
+int xCenter, yCenter, xReading, yReading, pixelNumber;
 
 void setup() {
   xCenter = Esplora.readJoystickX();
   yCenter = Esplora.readJoystickY();
   xReading = 0;
   yReading = 0;
+  pixelNumber = -1;
   Serial.begin(BAUD_RATE);
 }
 
 void loop() {
   xReading = Esplora.readJoystickX();
   yReading = Esplora.readJoystickY();
-  double joystickToRadians;
-  if (abs(xReading) > SENSITIVITY || abs(yReading) > SENSITIVITY){
-    joystickToRadians = calculateRadians(xReading, yReading);
+  double joystickRadians;
+  double joystickDegrees;
+
+  if (abs(xReading) > SENSITIVITY || abs(yReading) > SENSITIVITY) {
+    joystickDegrees = getDegrees(xReading, yReading);
+    pixelNumber = map(joystickDegrees, 0, 330, 0, 15);
+    
+#ifdef DEBUG
+    Serial.println("joystickDegrees: " + String(joystickDegrees) + " " +
+                   "pixelNumber: " + String(pixelNumber));
+#endif
+
   }
-   
-  delay(500);
+  else {
+    pixelNumber = -1;
+  }
+  delay(2000);
 }
 
-double calculateRadians(int x, int y){
+double getDegrees(int x, int y) {
   int xCalibrated = x - xCenter;
   int yCalibrated = y - yCenter;
   xCalibrated = -xCalibrated;
   yCalibrated = -yCalibrated;
-  double calculation = atan2(yCalibrated, xCalibrated);
-  calculation = constrain(calculation, -PI, PI);
+  double calculation = atan2(yCalibrated, xCalibrated) * 180 / PI;
+  if (calculation < 0) {
+    calculation += 360;
+  }
 
-  Serial.println("JoystickX: " + String(xReading) + "\t" +
-                 "JoystickY: " + String(yReading) + "\t" + 
-                 "atan2(" + String(yCalibrated) + ", " + String(xCalibrated) + ") = " +
-                 String(calculation));
-  
+#ifdef DEBUG
+  Serial.println("JoystickX: " + String(xReading) + "\t" + "JoystickY: " + String(yReading) + "\t" + "calculation = " + String(calculation));
+#endif
+
   return calculation;
 }
 
