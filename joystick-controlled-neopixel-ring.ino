@@ -7,17 +7,20 @@
  * Fall 2015
  */
 #include <Esplora.h>
+#include <Adafruit_NeoPixel.h>
 
 #define DEBUG
 #define BAUD_RATE 9600
 #define TAN_MIN -90
 #define TAN_MAX 90
-#define NUM_PIXELS 16
+#define NEOPIXEL_NUM_PIXELS 16
+#define NEOPIXEL_PIN_NUMBER 1
 #define JOYSTICK_MAX 512
 #define JOYSTICK_MIN -512
 #define SENSITIVITY 400
 
 int xCenter, yCenter, xReading, yReading, pixelNumber;
+Adafruit_NeoPixel neopixelRing;
 
 void setup() {
   xCenter = Esplora.readJoystickX();
@@ -26,6 +29,9 @@ void setup() {
   yReading = 0;
   pixelNumber = -1;
   Serial.begin(BAUD_RATE);
+  neopixelRing = Adafruit_NeoPixel(NEOPIXEL_NUM_PIXELS, NEOPIXEL_PIN_NUMBER, NEO_GRB + NEO_KHZ800);
+  neopixelRing.begin();
+  neopixelRing.show();
 }
 
 void loop() {
