@@ -10,13 +10,12 @@
 #include <Adafruit_NeoPixel.h>
 
 #define DEBUG
-#define DELAY 50
+#define DELAY 20
 #define BAUD_RATE 9600
 #define TAN_MIN -90
 #define TAN_MAX 90
 #define NEOPIXEL_NUM_PIXELS 16
-#define NEOPIXEL_NO_PIXEL -1
-#define NEOPIXEL_PIN_NUMBER 1
+#define NEOPIXEL_PIN_NUMBER 7
 #define NEOPIXEL_BRIGHTNESS 20
 #define JOYSTICK_MAX 512
 #define JOYSTICK_MIN -512
@@ -34,8 +33,7 @@ void setup() {
   xReading = 0;
   yReading = 0;
   Serial.begin(BAUD_RATE);
-  pinMode(NEOPIXEL_PIN_NUMBER, OUTPUT);
-  neoPixelRing = Adafruit_NeoPixel(NEOPIXEL_NUM_PIXELS, NEOPIXEL_PIN_NUMBER), NEO_GRB + NEO_KHZ800;
+  neoPixelRing = Adafruit_NeoPixel(NEOPIXEL_NUM_PIXELS, NEOPIXEL_PIN_NUMBER);
   neoPixelRing.begin();
   neoPixelRing.show();
 }
@@ -43,7 +41,6 @@ void setup() {
 void loop() {
   controlNeoPixelWithJoystick();
   //spinner();
-  delay(DELAY);
 }
 
 void controlNeoPixelWithJoystick() {
@@ -51,19 +48,16 @@ void controlNeoPixelWithJoystick() {
   yReading = Esplora.readJoystickY();
   double joystickRadians;
   double joystickDegrees;
-
   if (abs(xReading) > SENSITIVITY || abs(yReading) > SENSITIVITY) {
     joystickDegrees = getDegrees(xReading, yReading);
     pixelNumber = map(joystickDegrees, 0, 330, 0, 15);
     pixelNumber = constrain(pixelNumber, 0, 15);
     neoPixelRing.setPixelColor(pixelNumber, neoPixelRing.Color(0, NEOPIXEL_BRIGHTNESS, 0));
     neoPixelRing.show();
-
 #ifdef DEBUG
     Serial.println("joystickDegrees: " + String(joystickDegrees) + " " +
                    "pixelNumber: " + String(pixelNumber));
 #endif
-
   }
 }
 
@@ -85,15 +79,16 @@ double getDegrees(int x, int y) {
 }
 
 void spinner() {
+  int brightness = map(Esplora.readSlider(), 0, 1023, 0, 255);
   for (int i = 0; i < neoPixelRing.numPixels(); i++) {
     if (Esplora.readButton(SWITCH_UP) == LOW) {
-      neoPixelRing.setPixelColor(i, neoPixelRing.Color(NEOPIXEL_BRIGHTNESS, 0, 0));
+      neoPixelRing.setPixelColor(i, neoPixelRing.Color(brightness, 0, 0));
     }
     else {
-      neoPixelRing.setPixelColor(i, neoPixelRing.Color(0, NEOPIXEL_BRIGHTNESS, 0));
+      neoPixelRing.setPixelColor(i, neoPixelRing.Color(0, brightness, 0));
     }
     neoPixelRing.show();
-    delay(20);
+    delay(DELAY);
     for (int j = neoPixelRing.numPixels() - 1; j >= 0; j--) {
       neoPixelRing.setPixelColor(i, neoPixelRing.Color(0, 0, 0));
       neoPixelRing.show();
