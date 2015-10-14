@@ -18,6 +18,7 @@
 #define NEOPIXEL_NUM_PIXELS 16
 #define NEOPIXEL_PIN_NUMBER 7
 #define NEOPIXEL_BRIGHTNESS 20
+#define NO_PIXEL -1
 #define JOYSTICK_MAX 512
 #define JOYSTICK_MIN -512
 #define SENSITIVITY 400
@@ -65,13 +66,16 @@ void controlNeoPixelWithJoystick() {
     pixelNumber = map(joystickDegrees, 0, 330, 0, 15);
     pixelNumber = constrain(pixelNumber, 0, 15);
     if (oldPixelNumber != pixelNumber) {
-      neoPixel.setPixelColor(oldPixelNumber, neoPixel.Color(0, 0, 0));
-      neoPixel.show();
       neoPixel.setPixelColor(pixelNumber, neoPixel.Color(0, NEOPIXEL_BRIGHTNESS, 0));
-      neoPixel.show();
+      neoPixel.setPixelColor(oldPixelNumber, neoPixel.Color(0, 0, 0));
     }
-    oldPixelNumber = pixelNumber;
   }
+  else{
+    neoPixel.setPixelColor(pixelNumber, neoPixel.Color(0, 0, 0));
+    pixelNumber = NO_PIXEL;
+  }
+  neoPixel.show();
+  oldPixelNumber = pixelNumber;
 }
 
 double getDegrees(int x, int y) {
