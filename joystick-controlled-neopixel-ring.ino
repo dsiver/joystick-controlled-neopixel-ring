@@ -23,15 +23,18 @@
 #define SENSITIVITY 400
 
 int xCenter, yCenter, xReading, yReading, pixelNumber, oldPixelNumber;
-Adafruit_NeoPixel neoPixel;
-#ifdef DEBUG
 int upState, downState, leftState, rightState, oldUpState, oldDownState, oldLeftState, oldRightState;
-#endif
+Adafruit_NeoPixel neoPixel;
 
 void setup() {
-#ifdef DEBUG
-  initDebugVars();
-#endif
+  upState = 0;
+  downState = 0;
+  leftState = 0;
+  rightState = 0;
+  oldUpState = 0;
+  oldDownState = 0;
+  oldLeftState = 0;
+  oldRightState = 0;
   xCenter = Esplora.readJoystickX();
   yCenter = Esplora.readJoystickY();
   xReading = 0;
@@ -81,17 +84,6 @@ double getDegrees(int x, int y) {
     calculation += 360;
   }
   return calculation;
-}
-
-void initDebugVars() {
-  upState = 0;
-  downState = 0;
-  leftState = 0;
-  rightState = 0;
-  oldUpState = 0;
-  oldDownState = 0;
-  oldLeftState = 0;
-  oldRightState = 0;
 }
 
 void spinner() {
