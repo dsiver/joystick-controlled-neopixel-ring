@@ -24,18 +24,9 @@
 #define SENSITIVITY 400
 
 int xCenter, yCenter, xReading, yReading, pixelNumber, oldPixelNumber;
-int upState, downState, leftState, rightState, oldUpState, oldDownState, oldLeftState, oldRightState;
 Adafruit_NeoPixel neoPixel;
 
 void setup() {
-  upState = 0;
-  downState = 0;
-  leftState = 0;
-  rightState = 0;
-  oldUpState = 0;
-  oldDownState = 0;
-  oldLeftState = 0;
-  oldRightState = 0;
   xCenter = Esplora.readJoystickX();
   yCenter = Esplora.readJoystickY();
   xReading = 0;
@@ -51,8 +42,6 @@ void setup() {
 
 void loop() {
   controlNeoPixelWithJoystick();
-  //spinner();
-  //controlNeoPixelWithButtons();
   delay(DELAY);
 }
 
@@ -88,71 +77,4 @@ double getDegrees(int x, int y) {
     calculation += 360;
   }
   return calculation;
-}
-
-void spinner() {
-  int brightness = map(Esplora.readSlider(), 0, 1023, 0, 255);
-  for (int i = 0; i < neoPixel.numPixels(); i++) {
-    if (Esplora.readButton(SWITCH_UP) == LOW) {
-      neoPixel.setPixelColor(i, neoPixel.Color(brightness, 0, 0));
-    }
-    else {
-      neoPixel.setPixelColor(i, neoPixel.Color(0, brightness, 0));
-    }
-    neoPixel.show();
-    delay(TEST_DELAY);
-    for (int j = neoPixel.numPixels() - 1; j >= 0; j--) {
-      neoPixel.setPixelColor(i, neoPixel.Color(0, 0, 0));
-      neoPixel.show();
-    }
-  }
-}
-
-void controlNeoPixelWithButtons() {
-  upState = Esplora.readButton(SWITCH_UP);
-  downState = Esplora.readButton(SWITCH_DOWN);
-  leftState = Esplora.readButton(SWITCH_LEFT);
-  rightState = Esplora.readButton(SWITCH_RIGHT);
-  if (upState == LOW) {
-    if (oldUpState != upState) {
-      pixelNumber++;
-      if (pixelNumber == neoPixel.numPixels()) {
-        pixelNumber = 0;
-      }
-    }
-  }
-  else if (downState == LOW) {
-    if (oldDownState != downState) {
-      pixelNumber--;
-      if (pixelNumber < 0) {
-        pixelNumber = neoPixel.numPixels() - 1;
-      }
-    }
-  }
-  else if (leftState == LOW) {
-    if (oldLeftState != leftState) {
-      int newPixel = pixelNumber - 8;
-      if (newPixel < 0) {
-        newPixel += 16;
-      }
-      pixelNumber = newPixel;
-    }
-  }
-  else if (rightState == LOW) {
-    if (oldRightState != rightState) {
-      int newPixel = pixelNumber + 8;
-      if (newPixel > neoPixel.numPixels() - 1) {
-        newPixel -= 16;
-      }
-      pixelNumber = newPixel;
-    }
-  }
-  neoPixel.setPixelColor(pixelNumber, neoPixel.Color(0, NEOPIXEL_BRIGHTNESS, 0));
-  neoPixel.show();
-  oldUpState = upState;
-  oldDownState = downState;
-  oldLeftState = leftState;
-  oldRightState = rightState;
-  neoPixel.setPixelColor(oldPixelNumber, neoPixel.Color(0, 0, 0));
-  oldPixelNumber = pixelNumber;
 }
